@@ -46,6 +46,42 @@ public class GridManager : MonoBehaviour
 
         return _graph;
     }
+
+    #region visuals
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.blue;
+        try
+        {
+            for (int yStatus = 0; yStatus < height; ++yStatus)
+            {
+                for (int xStatus = 0; xStatus < width; ++xStatus)
+                {
+                    //set position
+                    float posY = this.transform.position.y - (yStatus * nodeGap);
+                    float posX = this.transform.position.x + (xStatus * nodeGap);
+
+                    Vector2 pos = new Vector2(posX, posY);
+
+                    Gizmos.DrawWireSphere(pos, 0.1f);
+                }
+            }
+            Gizmos.color = Color.red;
+            try
+            {
+                foreach (Vector2 pos in grid.edges.Keys)
+                {
+                    Gizmos.DrawWireSphere(pos, 0.2f);
+                }
+            }
+            catch { }
+        }
+        catch
+        {
+            Debug.LogError("Grid has no values (Height, Width, Node Gap)!");
+        }
+    }
+    #endregion
 }
 
 public class Graph
