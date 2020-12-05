@@ -7,11 +7,11 @@ public class GridManager : MonoBehaviour
     public int height;
     public int width;
     public float nodeGap;
-    public Graph grid;
+    public Graph graph;
 
     private void Awake()
     {
-        grid = BuildGraph(this.transform.position, height, width, nodeGap);
+        graph = BuildGraph(this.transform.position, height, width, nodeGap);
     }
 
     //build from upper left to lower right corner
@@ -69,7 +69,7 @@ public class GridManager : MonoBehaviour
             Gizmos.color = Color.red;
             try
             {
-                foreach (Vector2 pos in grid.edges.Keys)
+                foreach (Vector2 pos in graph.edges.Keys)
                 {
                     Gizmos.DrawWireSphere(pos, 0.2f);
                 }

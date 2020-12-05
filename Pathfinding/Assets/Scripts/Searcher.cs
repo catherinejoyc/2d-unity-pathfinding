@@ -5,12 +5,12 @@ using UnityEngine;
 public class Searcher : MonoBehaviour
 {
     public Transform goal;
-    public Graph grid;
+    public GridManager grid;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        BreadthFirstSearch();
     }
 
     // Update is called once per frame
@@ -33,7 +33,19 @@ public class Searcher : MonoBehaviour
         {
             var current = frontier.Dequeue();
 
-            foreach (Vector2 next in grid.Neighbors(current))
+            if (current.Equals(goal.position))
+            {
+                //walk
+                foreach(Vector2 pos in reached)
+                {
+                    this.transform.Translate(pos);
+                }
+                break;
+            }
+
+            Vector2[] neighbours = grid.graph.Neighbors(current);
+
+            foreach (Vector2 next in neighbours)
             {
                 if (!reached.Contains(next))
                 {
