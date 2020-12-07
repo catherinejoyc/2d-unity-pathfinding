@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Searcher : MonoBehaviour
@@ -16,43 +17,44 @@ public class Searcher : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
     }
 
     void BreadthFirstSearch()
     {
-        Vector2 currentPos = this.transform.position;
+        Vector2 startPos = this.transform.position;
 
         var frontier = new Queue<Vector2>();
-        frontier.Enqueue(currentPos);
+        frontier.Enqueue(startPos);
 
-        var reached = new HashSet<Vector2>();
-        reached.Add(currentPos);
+        var cameFrom = new Dictionary<Vector2, Vector2>();
+        //cameFrom[startPos] = null;
 
+        //breadcrumbs and pointer
         while (frontier.Count > 0)
         {
             var current = frontier.Dequeue();
-
-            if (current.Equals(goal.position))
-            {
-                //walk
-                foreach(Vector2 pos in reached)
-                {
-                    this.transform.Translate(pos);
-                }
-                break;
-            }
 
             Vector2[] neighbours = grid.graph.Neighbors(current);
 
             foreach (Vector2 next in neighbours)
             {
-                if (!reached.Contains(next))
+                if (!cameFrom.ContainsKey(next))
                 {
                     frontier.Enqueue(next);
-                    reached.Add(next);
+                    cameFrom[next] = current;
                 }
             }
         }
+
+        //path creation
+        var pos = (Vector2)goal.position;
+        Queue<Vector2> path = new Queue<Vector2>();
+        while(pos != startPos)
+        {
+            path.Enqueue(pos);
+            pos = cameFrom[pos];
+        }
+
+        path = new Queue<Vector2>(path.Reverse());
     }
 }
