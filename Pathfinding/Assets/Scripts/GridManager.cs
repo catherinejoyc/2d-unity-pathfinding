@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -32,13 +33,45 @@ public class GridManager : MonoBehaviour
                 Vector2 pos = new Vector2(posX, posY);
 
                 //set neighbors
-                Vector2[] posNeighbors = new Vector2[4] //right, down, left, up
+                Vector2[] posNeighbors = new Vector2[4]; //right, down, left, up
+                //{               
+                //    new Vector2(pos.x + nGap, pos.y),
+                //    new Vector2(pos.x, pos.y - nGap),
+                //    new Vector2(pos.x - nGap, pos.y),
+                //    new Vector2(pos.x, pos.y + nGap)
+                //};
+
+                int n = 0;
+
+                //right - if not right edge, create right neighbor
+                if (pos.x < startPos.x + (nGap * (width-1)))
                 {
-                    new Vector2(pos.x + nGap, pos.y),
-                    new Vector2(pos.x, pos.y - nGap),
-                    new Vector2(pos.x - nGap, pos.y),
-                    new Vector2(pos.x, pos.y + nGap)
-                };
+                    posNeighbors[n] = new Vector2(pos.x + nGap, pos.y);
+                    ++n;
+                }
+
+                //down - if not lower edge, create lower neighbor
+                if (pos.y > startPos.y - (nGap * (height-1)))
+                {
+                    posNeighbors[n] = new Vector2(pos.x, pos.y - nGap);
+                    ++n;
+                }
+
+                //left - if not left edge, create left neighbor
+                if (pos.x > startPos.x)
+                {
+                    posNeighbors[n] = new Vector2(pos.x - nGap, pos.y);
+                    ++n;
+                }
+
+                //up - if not upper edge, create upper neighbor
+                if (pos.y < startPos.y)
+                {
+                    posNeighbors[n] = new Vector2(pos.x, pos.y + nGap);
+                    ++n;
+                }
+
+                Array.Resize(ref posNeighbors, 4 - (4-n));
 
                 _graph.edges.Add(pos, posNeighbors);
             }
