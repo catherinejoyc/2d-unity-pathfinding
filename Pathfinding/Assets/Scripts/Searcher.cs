@@ -11,7 +11,8 @@ public class Searcher : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        BreadthFirstSearch();
+        Queue<Vector2> path = BreadthFirstSearch();
+        //StartCoroutine(Walk(path));
     }
 
     // Update is called once per frame
@@ -19,7 +20,7 @@ public class Searcher : MonoBehaviour
     {
     }
 
-    void BreadthFirstSearch()
+    Queue<Vector2> BreadthFirstSearch()
     {
         Vector2 startPos = this.transform.position;
 
@@ -33,6 +34,11 @@ public class Searcher : MonoBehaviour
         while (frontier.Count > 0)
         {
             var current = frontier.Dequeue();
+
+            if (current == (Vector2)goal.position) //early exit
+            {
+                break;
+            }
 
             Vector2[] neighbours = grid.graph.Neighbors(current);
 
@@ -56,5 +62,42 @@ public class Searcher : MonoBehaviour
         }
 
         path = new Queue<Vector2>(path.Reverse());
+
+        return path;
+    }
+
+    IEnumerator Walk(Queue<Vector2> path)
+    {
+        while (path.Count > 0)
+        {
+            Vector2 next = new Vector2();
+            next = path.Dequeue();
+
+            while ((Vector2)this.transform.position != next)
+            {
+                this.transform.Translate(next);
+                yield return new WaitForFixedUpdate();
+            }
+        }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.green;
+
+        try
+        {
+            Queue<Vector2> path = BreadthFirstSearch();
+
+            while (path.Count > 0)
+            {
+                Vector2 next = path.Dequeue();
+                Gizmos.DrawWireSphere(next, 1f);
+            }
+        }
+        catch
+        {
+            Debug.Log("Path will be drawn in Runtime.");
+        }
     }
 }
