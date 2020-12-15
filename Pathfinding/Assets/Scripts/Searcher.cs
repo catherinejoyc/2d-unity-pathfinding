@@ -12,7 +12,8 @@ public class Searcher : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Queue<Vector2> path = BreadthFirstSearch();
+        //Queue<Vector2> path = BreadthFirstSearch();
+        Queue<Vector2> path = AStarSearch();
         StartCoroutine(Walk(path));
     }
 
@@ -79,10 +80,12 @@ public class Searcher : MonoBehaviour
         Vector2 startPos = this.transform.position;
         startPos = GetNearestNode(startPos);
 
-        var frontier = new Queue<Vector2>();
-        frontier.Enqueue(startPos);
+        var frontier = new PriorityQueue<Vector2>();
+        frontier.Enqueue(startPos, 0);
 
         var cameFrom = new Dictionary<Vector2, Vector2>();
+        var costSoFar = new Dictionary<Vector2, float>();
+        costSoFar[startPos] = 0;
 
         //point goal position to its nearest node in grid
         Vector2 pathGoal = GetNearestNode(goal.position);
@@ -101,11 +104,21 @@ public class Searcher : MonoBehaviour
 
             foreach (Vector2 next in neighbours)
             {
-                if (!cameFrom.ContainsKey(next))
+                float newCost = costSoFar[current] /*+ graph.Cost(current, next)*/;
+
+                if (!costSoFar.ContainsKey(next) || newCost < costSoFar[next])
                 {
-                    frontier.Enqueue(next);
+                    costSoFar[next] = newCost;
+                    float priority = newCost + Heuristic(next, pathGoal);
+                    frontier.Enqueue(next, priority);
                     cameFrom[next] = current;
                 }
+
+                //if (!cameFrom.ContainsKey(next))
+                //{
+                //    frontier.Enqueue(next);
+                //    cameFrom[next] = current;
+                //}
             }
         }
 
@@ -128,16 +141,20 @@ public class Searcher : MonoBehaviour
     Vector2 GetNearestNode(Vector2 currentPos)
     {
         var nodesInGrid = grid.graph.edges.Keys.ToArray<Vector2>();
+        Vector2 pathGoal = goal.position;
 
         Vector2 nearestNode = nodesInGrid[0];
-        float distance = Vector2.Distance(nodesInGrid[0], currentPos);
+
+        float distance = Vector2.Distance(nodesInGrid[0], currentPos) + Vector2.Distance(nodesInGrid[0], pathGoal);
 
         for (int i = 0; i < nodesInGrid.Length; ++i)
         {
+            float curDist = Vector2.Distance(nodesInGrid[i], currentPos) + Vector2.Distance(nodesInGrid[i], pathGoal);
+
             //check distance
-            if (Vector2.Distance(nodesInGrid[i], currentPos) < distance)
+            if (curDist < distance)
             {
-                distance = Vector2.Distance(nodesInGrid[i], currentPos);
+                distance = curDist;
                 nearestNode = nodesInGrid[i];
             }
         }
