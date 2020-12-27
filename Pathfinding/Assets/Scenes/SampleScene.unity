@@ -1790,7 +1790,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goal: {fileID: 456014040}
   grid: {fileID: 1296094222}
-  speed: 3
+  speed: 2
+  stoppingDistance: 3
 --- !u!1 &1745807464
 GameObject:
   m_ObjectHideFlags: 0

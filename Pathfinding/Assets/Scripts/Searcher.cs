@@ -10,6 +10,7 @@ public class Searcher : MonoBehaviour
 
     public GridManager grid;
     public float speed;
+    public float stoppingDistance;
     Queue<Vector2> path = new Queue<Vector2>();
     private Coroutine walkCo;
 
@@ -106,8 +107,9 @@ public class Searcher : MonoBehaviour
         {
             var current = frontier.Dequeue();
 
-            if (current == pathGoal) //early exit
+            if (Vector2.Distance(current, pathGoal) <= stoppingDistance) //early exit
             {
+                pathGoal = current;
                 break;
             }
 
