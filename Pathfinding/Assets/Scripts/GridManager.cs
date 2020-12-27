@@ -31,58 +31,61 @@ public class GridManager : MonoBehaviour
                 float posY = startPos.y - (yStatus * nGap);
                 float posX = startPos.x + (xStatus * nGap);
 
+                //check if pos is passable                
                 Vector2 pos = new Vector2(posX, posY);
-
-                //set neighbors
-                Vector2[] posNeighbors = new Vector2[4];
-
-                var newPos = new Vector2(0,0);
-                int n = 0;
-                //right - if not right edge, create right neighbor
-                if (pos.x < startPos.x + (nGap * (width-1)))
+                if (Passable(pos))
                 {
-                    newPos = new Vector2(pos.x + nGap, pos.y);
-                    if (Passable(newPos))
+                    //set neighbors
+                    Vector2[] posNeighbors = new Vector2[4];
+
+                    var newPos = new Vector2(0, 0);
+                    int n = 0;
+                    //right - if not right edge, create right neighbor
+                    if (pos.x < startPos.x + (nGap * (width - 1)))
                     {
-                        posNeighbors[n] = newPos;
-                        ++n;
+                        newPos = new Vector2(pos.x + nGap, pos.y);
+                        if (Passable(newPos))
+                        {
+                            posNeighbors[n] = newPos;
+                            ++n;
+                        }
                     }
-                }
-                //down - if not lower edge, create lower neighbor
-                if (pos.y > startPos.y - (nGap * (height-1)))
-                {
-                    newPos = new Vector2(pos.x, pos.y - nGap);
-                    if (Passable(newPos))
+                    //down - if not lower edge, create lower neighbor
+                    if (pos.y > startPos.y - (nGap * (height - 1)))
                     {
-                        posNeighbors[n] = newPos;
-                        ++n;
+                        newPos = new Vector2(pos.x, pos.y - nGap);
+                        if (Passable(newPos))
+                        {
+                            posNeighbors[n] = newPos;
+                            ++n;
+                        }
+
+                    }
+                    //left - if not left edge, create left neighbor
+                    if (pos.x > startPos.x)
+                    {
+                        newPos = new Vector2(pos.x - nGap, pos.y);
+                        if (Passable(newPos))
+                        {
+                            posNeighbors[n] = newPos;
+                            ++n;
+                        }
+                    }
+                    //up - if not upper edge, create upper neighbor
+                    if (pos.y < startPos.y)
+                    {
+                        newPos = new Vector2(pos.x, pos.y + nGap);
+                        if (Passable(newPos))
+                        {
+                            posNeighbors[n] = newPos;
+                            ++n;
+                        }
                     }
 
-                }
-                //left - if not left edge, create left neighbor
-                if (pos.x > startPos.x)
-                {
-                    newPos = new Vector2(pos.x - nGap, pos.y);
-                    if (Passable(newPos))
-                    {
-                        posNeighbors[n] = newPos;
-                        ++n;
-                    }
-                }
-                //up - if not upper edge, create upper neighbor
-                if (pos.y < startPos.y)
-                {
-                    newPos = new Vector2(pos.x, pos.y + nGap);
-                    if (Passable(newPos))
-                    {
-                        posNeighbors[n] = newPos;
-                        ++n;
-                    }
-                }
+                    Array.Resize(ref posNeighbors, 4 - (4 - n));
 
-                Array.Resize(ref posNeighbors, 4 - (4-n));
-
-                _graph.edges.Add(pos, posNeighbors);
+                    _graph.edges.Add(pos, posNeighbors);
+                }              
             }
         }
 

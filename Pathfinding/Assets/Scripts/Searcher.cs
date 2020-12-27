@@ -6,20 +6,31 @@ using UnityEngine;
 public class Searcher : MonoBehaviour
 {
     public Transform goal;
+    private Vector2 lastGoalPosition;
+
     public GridManager grid;
     public float speed;
+    Queue<Vector2> path = new Queue<Vector2>();
+    private Coroutine walkCo;
 
     // Start is called before the first frame update
     void Start()
     {
         //Queue<Vector2> path = BreadthFirstSearch();
-        Queue<Vector2> path = AStarSearch();
-        StartCoroutine(Walk(path));
+        path = AStarSearch();
+        walkCo = StartWalking(path);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if ((Vector2)goal.position != lastGoalPosition)
+        {
+            path = AStarSearch();
+            walkCo = StartWalking(path);
+
+            lastGoalPosition = goal.position;
+        }
     }
 
     Queue<Vector2> BreadthFirstSearch()
@@ -145,11 +156,11 @@ public class Searcher : MonoBehaviour
 
         Vector2 nearestNode = nodesInGrid[0];
 
-        float distance = Vector2.Distance(nodesInGrid[0], currentPos) + Vector2.Distance(nodesInGrid[0], pathGoal);
+        float distance = Vector2.Distance(nodesInGrid[0], currentPos)/* + Vector2.Distance(nodesInGrid[0], pathGoal)*/;
 
         for (int i = 0; i < nodesInGrid.Length; ++i)
         {
-            float curDist = Vector2.Distance(nodesInGrid[i], currentPos) + Vector2.Distance(nodesInGrid[i], pathGoal);
+            float curDist = Vector2.Distance(nodesInGrid[i], currentPos)/* + Vector2.Distance(nodesInGrid[i], pathGoal)*/;
 
             //check distance
             if (curDist < distance)
@@ -160,6 +171,16 @@ public class Searcher : MonoBehaviour
         }
 
         return nearestNode;
+    }
+
+    public Coroutine StartWalking(Queue<Vector2> path)
+    {
+        if (walkCo != null)
+        {
+            StopCoroutine(walkCo);
+        }
+
+        return StartCoroutine(Walk(path));
     }
 
     IEnumerator Walk(Queue<Vector2> path)
