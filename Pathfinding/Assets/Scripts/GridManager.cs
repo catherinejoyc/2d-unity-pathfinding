@@ -9,6 +9,7 @@ public class GridManager : MonoBehaviour
     public int width;
     public float nodeGap;
     public Graph graph;
+    public LayerMask notPassable;
 
     private void Awake()
     {
@@ -33,42 +34,50 @@ public class GridManager : MonoBehaviour
                 Vector2 pos = new Vector2(posX, posY);
 
                 //set neighbors
-                Vector2[] posNeighbors = new Vector2[4]; //right, down, left, up
-                //{               
-                //    new Vector2(pos.x + nGap, pos.y),
-                //    new Vector2(pos.x, pos.y - nGap),
-                //    new Vector2(pos.x - nGap, pos.y),
-                //    new Vector2(pos.x, pos.y + nGap)
-                //};
+                Vector2[] posNeighbors = new Vector2[4];
 
+                var newPos = new Vector2(0,0);
                 int n = 0;
-
                 //right - if not right edge, create right neighbor
                 if (pos.x < startPos.x + (nGap * (width-1)))
                 {
-                    posNeighbors[n] = new Vector2(pos.x + nGap, pos.y);
-                    ++n;
+                    newPos = new Vector2(pos.x + nGap, pos.y);
+                    if (Passable(newPos))
+                    {
+                        posNeighbors[n] = newPos;
+                        ++n;
+                    }
                 }
-
                 //down - if not lower edge, create lower neighbor
                 if (pos.y > startPos.y - (nGap * (height-1)))
                 {
-                    posNeighbors[n] = new Vector2(pos.x, pos.y - nGap);
-                    ++n;
-                }
+                    newPos = new Vector2(pos.x, pos.y - nGap);
+                    if (Passable(newPos))
+                    {
+                        posNeighbors[n] = newPos;
+                        ++n;
+                    }
 
+                }
                 //left - if not left edge, create left neighbor
                 if (pos.x > startPos.x)
                 {
-                    posNeighbors[n] = new Vector2(pos.x - nGap, pos.y);
-                    ++n;
+                    newPos = new Vector2(pos.x - nGap, pos.y);
+                    if (Passable(newPos))
+                    {
+                        posNeighbors[n] = newPos;
+                        ++n;
+                    }
                 }
-
                 //up - if not upper edge, create upper neighbor
                 if (pos.y < startPos.y)
                 {
-                    posNeighbors[n] = new Vector2(pos.x, pos.y + nGap);
-                    ++n;
+                    newPos = new Vector2(pos.x, pos.y + nGap);
+                    if (Passable(newPos))
+                    {
+                        posNeighbors[n] = newPos;
+                        ++n;
+                    }
                 }
 
                 Array.Resize(ref posNeighbors, 4 - (4-n));
@@ -78,6 +87,19 @@ public class GridManager : MonoBehaviour
         }
 
         return _graph;
+    }
+
+    bool Passable(Vector2 location)
+    {
+        //check if location has walls
+        if (Physics2D.OverlapPoint(location, notPassable) == null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     #region visuals

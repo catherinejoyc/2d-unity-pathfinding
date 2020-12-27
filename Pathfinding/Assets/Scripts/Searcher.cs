@@ -104,7 +104,7 @@ public class Searcher : MonoBehaviour
 
             foreach (Vector2 next in neighbours)
             {
-                float newCost = costSoFar[current] /*+ graph.Cost(current, next)*/;
+                float newCost = costSoFar[current] /*+ grid.Cost(current, next)*/;
 
                 if (!costSoFar.ContainsKey(next) || newCost < costSoFar[next])
                 {
